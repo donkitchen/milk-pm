@@ -6,6 +6,7 @@ import DueSection from '../components/DueSection'
 import SearchBar from '../components/SearchBar'
 import QuickAdd from '../components/QuickAdd'
 import DashboardShell from '../components/DashboardShell'
+import ActivityFeed from '../components/ActivityFeed'
 
 export const dynamic = 'force-dynamic'
 
@@ -81,6 +82,10 @@ export default async function DashboardPage() {
           </div>
         )}
 
+        {/* Activity Feed */}
+        <div className="mt-8">
+          <ActivityFeed />
+        </div>
       </main>
     </DashboardShell>
   )
