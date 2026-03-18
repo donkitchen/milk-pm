@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '../../../lib/supabase/server'
 import { getLists } from '../../../lib/rtm'
+import { TABLE_PROJECT_CONFIGS } from '../../../lib/supabase/config'
 import type { ProjectConfig } from '../../../lib/supabase/types'
 
 export interface DiscoveredProject {
@@ -32,7 +33,7 @@ export async function GET() {
     const [rtmLists, { data: savedConfigs }] = await Promise.all([
       getLists(),
       supabase
-        .from('project_configs')
+        .from(TABLE_PROJECT_CONFIGS)
         .select('*')
         .eq('user_id', user.id),
     ])
@@ -103,14 +104,14 @@ export async function POST(request: Request) {
 
     // Delete all existing configs for this user
     await supabase
-      .from('project_configs')
+      .from(TABLE_PROJECT_CONFIGS)
       .delete()
       .eq('user_id', user.id)
 
     // Insert new configs
     if (projects.length > 0) {
       const { error } = await supabase
-        .from('project_configs')
+        .from(TABLE_PROJECT_CONFIGS)
         .insert(
           projects.map((p) => ({
             user_id: user.id,

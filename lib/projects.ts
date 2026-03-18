@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { getLists, getTasksForList, normalizeTaskSeries, RTMList } from './rtm'
+import { DB_SCHEMA, TABLE_PROJECT_CONFIGS } from './supabase/config'
 
 // --- Types ---
 
@@ -45,7 +46,8 @@ function buildListIndex(rtmLists: RTMList[]): Map<string, string> {
 function getSupabaseClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { db: { schema: DB_SCHEMA } }
   )
 }
 
@@ -55,7 +57,7 @@ export async function getProjectConfigs(): Promise<ProjectConfig[]> {
   const supabase = getSupabaseClient()
 
   const { data, error } = await supabase
-    .from('project_configs')
+    .from(TABLE_PROJECT_CONFIGS)
     .select('slug, name, description, color, url, convention, lists')
 
   if (error) {
