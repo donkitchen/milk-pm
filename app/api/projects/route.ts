@@ -113,13 +113,15 @@ export async function POST(request: Request) {
       const { error } = await supabase
         .from(TABLE_PROJECT_CONFIGS)
         .insert(
-          projects.map((p) => ({
+          projects.map((p, index) => ({
             user_id: user.id,
             slug: p.slug,
             name: p.name,
             description: p.description || null,
             color: p.color,
             url: p.url || null,
+            category: p.category || null,
+            display_order: p.display_order ?? index,
             convention: p.convention || 'milk-mcp',
             lists: p.lists,
           }))

@@ -13,6 +13,8 @@ export interface ProjectConfig {
   color: string
   url?: string
   convention?: string
+  category?: string
+  display_order?: number
   lists: Record<ListRole, string>
 }
 
@@ -58,7 +60,8 @@ export async function getProjectConfigs(): Promise<ProjectConfig[]> {
 
   const { data, error } = await supabase
     .from(TABLE_PROJECT_CONFIGS)
-    .select('slug, name, description, color, url, convention, lists')
+    .select('slug, name, description, color, url, convention, category, display_order, lists')
+    .order('display_order', { ascending: true, nullsFirst: false })
 
   if (error) {
     console.error('Failed to fetch project configs:', error)
@@ -72,6 +75,8 @@ export async function getProjectConfigs(): Promise<ProjectConfig[]> {
     color: row.color,
     url: row.url ?? undefined,
     convention: row.convention ?? 'milk-mcp',
+    category: row.category ?? undefined,
+    display_order: row.display_order ?? undefined,
     lists: row.lists as Record<ListRole, string>,
   }))
 }
@@ -93,8 +98,8 @@ export async function getProjectSummaries(): Promise<ProjectSummary[]> {
     configs.map(async (config) => {
       const stats: ProjectListStat[] = await Promise.all(
         LIST_ROLES.map(async (role) => {
-          const rtmListName = config.lists[role]
-          const rtmListId = listIndex.get(rtmListName.toLowerCase()) ?? null
+          const rtmListName = config.lists?.[role] ?? ''
+          const rtmListId = rtmListName ? (listIndex.get(rtmListName.toLowerCase()) ?? null) : null
 
           let count = 0
           if (rtmListId) {
@@ -131,8 +136,8 @@ export async function getProjectDetail(slug: string): Promise<ProjectSummary | n
 
   const stats: ProjectListStat[] = await Promise.all(
     LIST_ROLES.map(async (role) => {
-      const rtmListName = config.lists[role]
-      const rtmListId = listIndex.get(rtmListName.toLowerCase()) ?? null
+      const rtmListName = config.lists?.[role] ?? ''
+      const rtmListId = rtmListName ? (listIndex.get(rtmListName.toLowerCase()) ?? null) : null
 
       let count = 0
       if (rtmListId) {

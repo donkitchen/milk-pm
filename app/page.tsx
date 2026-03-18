@@ -2,6 +2,9 @@ import Link from 'next/link'
 import { getProjectSummaries } from '../lib/projects'
 import ProjectCard from '../components/ProjectCard'
 import StatBar from '../components/StatBar'
+import DueSection from '../components/DueSection'
+import SearchBar from '../components/SearchBar'
+import QuickAdd from '../components/QuickAdd'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,8 +14,8 @@ export default async function DashboardPage() {
   return (
     <main className="min-h-screen bg-white dark:bg-gray-950 px-4 py-10 sm:px-8 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
+        <div className="flex-shrink-0">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
             milk-pm
           </h1>
@@ -20,16 +23,35 @@ export default async function DashboardPage() {
             Your RTM projects at a glance
           </p>
         </div>
-        <Link
-          href="/settings"
-          className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-        >
-          Settings
-        </Link>
+        <div className="flex-1 sm:max-w-md sm:ml-auto">
+          <SearchBar />
+        </div>
+        <div className="flex items-center gap-4 shrink-0">
+          <Link
+            href="/about"
+            className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          >
+            About
+          </Link>
+          <Link
+            href="/settings"
+            className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          >
+            Settings
+          </Link>
+        </div>
       </div>
 
       {/* Stats */}
       <StatBar summaries={summaries} />
+
+      {/* Quick Add */}
+      <div className="mb-6">
+        <QuickAdd />
+      </div>
+
+      {/* Due Date Sections */}
+      <DueSection />
 
       {/* Project grid */}
       {summaries.length === 0 ? (

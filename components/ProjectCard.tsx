@@ -39,9 +39,16 @@ export default function ProjectCard({ summary }: Props) {
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-              {config.name}
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {config.name}
+              </h2>
+              {config.category && (
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                  {config.category}
+                </span>
+              )}
+            </div>
             {config.description && (
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                 {config.description}

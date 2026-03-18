@@ -23,6 +23,16 @@ interface DiscoveredProject {
 
 const COLORS = ['blue', 'teal', 'purple', 'amber', 'green', 'red', 'gray']
 
+const SUGGESTED_CATEGORIES = [
+  'Work',
+  'Personal',
+  'Side Project',
+  'Open Source',
+  'Client',
+  'Learning',
+  'Archive',
+]
+
 const COLOR_PREVIEW: Record<string, string> = {
   blue: 'bg-blue-500',
   teal: 'bg-teal-500',
@@ -77,12 +87,14 @@ export default function SettingsPage() {
     // Build the projects.json content from enabled projects
     const enabledProjects: ProjectConfig[] = projects
       .filter((p) => p.enabled)
-      .map((p) => ({
+      .map((p, index) => ({
         slug: p.slug,
         name: p.config?.name ?? p.name,
         description: p.config?.description ?? '',
         color: p.config?.color ?? 'blue',
         url: p.config?.url ?? '',
+        category: p.config?.category ?? '',
+        display_order: index,
         convention: 'milk-mcp',
         lists: p.lists,
       }))
@@ -118,6 +130,7 @@ export default function SettingsPage() {
                 description: '',
                 color: 'blue',
                 url: '',
+                category: '',
                 convention: 'milk-mcp',
                 lists: p.lists,
               }
@@ -317,7 +330,31 @@ export default function SettingsPage() {
                           </div>
                           <div>
                             <label className="block text-xs text-gray-500 mb-1">
-                              Repository URL
+                              Category
+                            </label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={project.config.category ?? ''}
+                                onChange={(e) =>
+                                  updateConfig(project.slug, {
+                                    category: e.target.value,
+                                  })
+                                }
+                                placeholder="e.g., Work, Personal, Open Source"
+                                list={`categories-${project.slug}`}
+                                className="flex-1 px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                              />
+                              <datalist id={`categories-${project.slug}`}>
+                                {SUGGESTED_CATEGORIES.map((cat) => (
+                                  <option key={cat} value={cat} />
+                                ))}
+                              </datalist>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">
+                              Project URL
                             </label>
                             <input
                               type="text"
@@ -347,6 +384,11 @@ export default function SettingsPage() {
                                 COLOR_PREVIEW[project.config.color]
                               }`}
                             />
+                            {project.config.category && (
+                              <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-xs">
+                                {project.config.category}
+                              </span>
+                            )}
                             {project.config.description && (
                               <span>{project.config.description}</span>
                             )}
@@ -357,7 +399,7 @@ export default function SettingsPage() {
                                 rel="noopener noreferrer"
                                 className="text-blue-500 hover:underline"
                               >
-                                ↗ repo
+                                ↗ link
                               </a>
                             )}
                           </div>

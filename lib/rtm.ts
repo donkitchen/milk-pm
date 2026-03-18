@@ -27,6 +27,15 @@ export interface RTMTask {
   priority: string
   postponed: string
   estimate: string
+  start: string
+}
+
+export interface RTMNote {
+  id: string
+  created: string
+  modified: string
+  title: string
+  $t: string // Note content
 }
 
 export interface RTMTaskSeries {
@@ -39,8 +48,10 @@ export interface RTMTaskSeries {
   location_id: string
   tags: { tag: string[] } | string
   participants: unknown
-  notes: unknown
+  notes: { note: RTMNote[] } | string
   task: RTMTask | RTMTask[]
+  // Extended fields for search results
+  list_id?: string
 }
 
 export interface RTMTaskList {
@@ -117,4 +128,162 @@ export function normalizeTaskSeries(
 ): RTMTaskSeries[] {
   if (!list.taskseries) return []
   return Array.isArray(list.taskseries) ? list.taskseries : [list.taskseries]
+}
+
+// --- Search and filtering ---
+
+export async function searchTasks(
+  filter: string,
+  options: { listId?: string; cache?: boolean } = {}
+): Promise<RTMTaskSeries[]> {
+  const params: Record<string, string> = { filter }
+  if (options.listId) params.list_id = options.listId
+
+  const fetchOptions = options.cache === false
+    ? { cache: 'no-store' as const }
+    : { next: { revalidate: 60 } }
+
+  const rsp = await rtmRequestWithOptions<{ tasks: { list?: RTMTaskList | RTMTaskList[] } }>(
+    'rtm.tasks.getList',
+    params,
+    fetchOptions
+  )
+
+  const lists = rsp.tasks.list
+  if (!lists) return []
+
+  const listArray = Array.isArray(lists) ? lists : [lists]
+
+  // Flatten all task series from all lists, adding list_id for context
+  return listArray.flatMap((list) => {
+    const series = normalizeTaskSeries(list)
+    return series.map((s) => ({ ...s, list_id: list.id }))
+  })
+}
+
+// --- Task mutations ---
+
+async function getTimeline(): Promise<string> {
+  const rsp = await rtmRequestWithOptions<{ timeline: string }>(
+    'rtm.timelines.create',
+    {},
+    { cache: 'no-store' }
+  )
+  return rsp.timeline
+}
+
+export async function addTask(params: {
+  name: string
+  listId?: string
+  parse?: boolean
+}): Promise<RTMTaskSeries> {
+  const timeline = await getTimeline()
+
+  const reqParams: Record<string, string> = {
+    timeline,
+    name: params.name,
+    parse: params.parse !== false ? '1' : '0', // Enable smart parsing by default
+  }
+  if (params.listId) reqParams.list_id = params.listId
+
+  const rsp = await rtmRequestWithOptions<{ list: RTMTaskList }>(
+    'rtm.tasks.add',
+    reqParams,
+    { cache: 'no-store' }
+  )
+
+  const series = normalizeTaskSeries(rsp.list)
+  if (series.length === 0) {
+    throw new Error('Failed to add task: no task returned')
+  }
+  return series[0]
+}
+
+export async function completeTask(
+  listId: string,
+  taskseriesId: string,
+  taskId: string
+): Promise<void> {
+  const timeline = await getTimeline()
+
+  await rtmRequestWithOptions(
+    'rtm.tasks.complete',
+    {
+      timeline,
+      list_id: listId,
+      taskseries_id: taskseriesId,
+      task_id: taskId,
+    },
+    { cache: 'no-store' }
+  )
+}
+
+export async function uncompleteTask(
+  listId: string,
+  taskseriesId: string,
+  taskId: string
+): Promise<void> {
+  const timeline = await getTimeline()
+
+  await rtmRequestWithOptions(
+    'rtm.tasks.uncomplete',
+    {
+      timeline,
+      list_id: listId,
+      taskseries_id: taskseriesId,
+      task_id: taskId,
+    },
+    { cache: 'no-store' }
+  )
+}
+
+// --- Core request with configurable fetch options ---
+
+async function rtmRequestWithOptions<T = unknown>(
+  method: string,
+  params: Record<string, string> = {},
+  fetchOptions: RequestInit & { next?: { revalidate: number } } = { next: { revalidate: 60 } }
+): Promise<T> {
+  const allParams: Record<string, string> = {
+    method,
+    api_key: RTM_API_KEY,
+    auth_token: RTM_AUTH_TOKEN,
+    format: 'json',
+    ...params,
+  }
+  allParams.api_sig = sign(allParams)
+
+  const url =
+    RTM_API_BASE +
+    '?' +
+    new URLSearchParams(allParams).toString()
+
+  const res = await fetch(url, fetchOptions)
+  if (!res.ok) throw new Error(`RTM HTTP error: ${res.status}`)
+
+  const json = await res.json()
+  if (json.rsp.stat !== 'ok') {
+    throw new Error(`RTM API error: ${json.rsp.err?.msg ?? 'unknown'}`)
+  }
+
+  return json.rsp as T
+}
+
+// --- Helper functions ---
+
+export function getFirstTask(series: RTMTaskSeries): RTMTask | null {
+  if (!series.task) return null
+  return Array.isArray(series.task) ? series.task[0] : series.task
+}
+
+export function getTags(series: RTMTaskSeries): string[] {
+  if (!series.tags) return []
+  if (typeof series.tags === 'string') return []
+  return series.tags.tag ?? []
+}
+
+export function getNotes(series: RTMTaskSeries): RTMNote[] {
+  if (!series.notes) return []
+  if (typeof series.notes === 'string') return []
+  return series.notes.note ?? []
 }
