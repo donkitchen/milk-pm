@@ -93,6 +93,7 @@ export default function SettingsPage() {
         description: p.config?.description ?? '',
         color: p.config?.color ?? 'blue',
         url: p.config?.url ?? '',
+        repo_url: p.config?.repo_url ?? '',
         category: p.config?.category ?? '',
         display_order: index,
         convention: 'milk-mcp',
@@ -130,6 +131,7 @@ export default function SettingsPage() {
                 description: '',
                 color: 'blue',
                 url: '',
+                repo_url: '',
                 category: '',
                 convention: 'milk-mcp',
                 lists: p.lists,
@@ -352,21 +354,39 @@ export default function SettingsPage() {
                               </datalist>
                             </div>
                           </div>
-                          <div>
-                            <label className="block text-xs text-gray-500 mb-1">
-                              Project URL
-                            </label>
-                            <input
-                              type="text"
-                              value={project.config.url ?? ''}
-                              onChange={(e) =>
-                                updateConfig(project.slug, {
-                                  url: e.target.value,
-                                })
-                              }
-                              placeholder="https://github.com/..."
-                              className="w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                            />
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">
+                                Project URL
+                              </label>
+                              <input
+                                type="text"
+                                value={project.config.url ?? ''}
+                                onChange={(e) =>
+                                  updateConfig(project.slug, {
+                                    url: e.target.value,
+                                  })
+                                }
+                                placeholder="https://example.com"
+                                className="w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">
+                                Repository URL
+                              </label>
+                              <input
+                                type="text"
+                                value={project.config.repo_url ?? ''}
+                                onChange={(e) =>
+                                  updateConfig(project.slug, {
+                                    repo_url: e.target.value,
+                                  })
+                                }
+                                placeholder="https://github.com/..."
+                                className="w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                              />
+                            </div>
                           </div>
                           <button
                             onClick={() => setEditingSlug(null)}
@@ -399,7 +419,17 @@ export default function SettingsPage() {
                                 rel="noopener noreferrer"
                                 className="text-blue-500 hover:underline"
                               >
-                                ↗ link
+                                ↗ site
+                              </a>
+                            )}
+                            {project.config.repo_url && (
+                              <a
+                                href={project.config.repo_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 hover:underline"
+                              >
+                                ↗ repo
                               </a>
                             )}
                           </div>

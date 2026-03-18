@@ -8,7 +8,8 @@
 -- For public schema (milkpm_project_configs)
 ALTER TABLE milkpm_project_configs
 ADD COLUMN IF NOT EXISTS category text,
-ADD COLUMN IF NOT EXISTS display_order integer;
+ADD COLUMN IF NOT EXISTS display_order integer,
+ADD COLUMN IF NOT EXISTS repo_url text;
 
 -- Create index for sorting
 CREATE INDEX IF NOT EXISTS idx_milkpm_project_configs_display_order

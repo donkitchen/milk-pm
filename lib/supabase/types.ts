@@ -6,6 +6,7 @@ export interface ProjectConfig {
   description: string | null
   color: string
   url: string | null
+  repo_url: string | null
   convention: string
   category: string | null
   display_order: number | null

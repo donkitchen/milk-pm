@@ -12,6 +12,7 @@ export interface ProjectConfig {
   description?: string
   color: string
   url?: string
+  repo_url?: string
   convention?: string
   category?: string
   display_order?: number
@@ -60,7 +61,7 @@ export async function getProjectConfigs(): Promise<ProjectConfig[]> {
 
   const { data, error } = await supabase
     .from(TABLE_PROJECT_CONFIGS)
-    .select('slug, name, description, color, url, convention, category, display_order, lists')
+    .select('slug, name, description, color, url, repo_url, convention, category, display_order, lists')
     .order('display_order', { ascending: true, nullsFirst: false })
 
   if (error) {
@@ -74,6 +75,7 @@ export async function getProjectConfigs(): Promise<ProjectConfig[]> {
     description: row.description ?? undefined,
     color: row.color,
     url: row.url ?? undefined,
+    repo_url: row.repo_url ?? undefined,
     convention: row.convention ?? 'milk-mcp',
     category: row.category ?? undefined,
     display_order: row.display_order ?? undefined,

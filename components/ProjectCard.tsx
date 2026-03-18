@@ -85,17 +85,30 @@ export default function ProjectCard({ summary }: Props) {
         {/* Footer */}
         <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
           <span>{totalOpen} open items</span>
-          {config.url && (
-            <a
-              href={config.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-            >
-              ↗ repo
-            </a>
-          )}
+          <div className="flex items-center gap-3">
+            {config.url && (
+              <a
+                href={config.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                ↗ site
+              </a>
+            )}
+            {config.repo_url && (
+              <a
+                href={config.repo_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                ↗ repo
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </Link>

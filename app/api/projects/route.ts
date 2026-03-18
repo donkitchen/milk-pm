@@ -120,6 +120,7 @@ export async function POST(request: Request) {
             description: p.description || null,
             color: p.color,
             url: p.url || null,
+            repo_url: p.repo_url || null,
             category: p.category || null,
             display_order: p.display_order ?? index,
             convention: p.convention || 'milk-mcp',
