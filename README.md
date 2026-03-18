@@ -1,11 +1,13 @@
 <p align="center">
-  <img src="public/milktools-mascot.jpg" alt="milk.tools mascot" width="120" />
+  <a href="https://milk.tools">
+    <img src="public/milktools-mascot.jpg" alt="milk.tools" width="80" />
+  </a>
 </p>
 
 <h1 align="center">milk-pm</h1>
 
 <p align="center">
-  <strong>A powerful project management dashboard built on Remember The Milk</strong>
+  <strong>Your projects, remembered.</strong>
 </p>
 
 <p align="center">
@@ -15,68 +17,54 @@
   <a href="#deploy">Deploy</a>
 </p>
 
-<p align="center">
-  <img src="public/milktools-banner.jpg" alt="milk.tools" width="300" />
-</p>
-
-<p align="center">
-  Part of the <a href="https://milk.tools"><strong>milk.tools</strong></a> suite
-</p>
-
 ---
 
-## Why milk-pm?
+## What is this?
 
-**Remember The Milk is great for personal tasks. But what if you need more?**
+You know how Remember The Milk is great for personal tasks but feels a bit... personal?
 
-milk-pm transforms RTM into a full-featured project management system — without losing the simplicity you love. Group tasks by project, track priorities, monitor velocity, and manage everything from a beautiful dashboard.
+**milk-pm** turns RTM into an actual project management system. Multiple projects. Priority views. Due date tracking. Velocity charts. The whole thing.
 
-Built for developers, PMs, and teams who want the power of RTM with a project management layer on top.
+Is this over-engineered? Maybe. Does it work surprisingly well? Also yes.
 
 ---
 
 ## Features
 
-### Dashboard
-- **Project Overview** — See all your projects at a glance with task counts and bug badges
-- **Due Date Sections** — Overdue, due today, and due this week — always visible
-- **Global Search** — Find any task instantly with debounced search
-- **Activity Feed** — Track recent task changes across all projects
-- **Quick Add** — Add tasks from anywhere with smart parsing
+### The Dashboard Stuff
+- **Project Overview** — All your projects. Task counts. Bug badges. Very satisfying.
+- **Due Date Sections** — Overdue (yikes), due today (okay), due this week (you're fine)
+- **Global Search** — Find tasks. Fast. With debouncing. Because we're fancy.
+- **Activity Feed** — See what changed. Feel productive.
+- **Quick Add** — Add tasks without leaving the dashboard. Revolutionary.
 
-### Project Detail
-- **Five List Types** — TODO, Backlog, Bugs, Decisions, and Context
-- **Priority Filtering** — Filter by P1/P2/P3 with visual priority indicators
-- **Sorting** — Sort by priority, due date, or name
-- **Clickable Tasks** — View full details for any task
+### The Project Stuff
+- **Five List Types** — TODO, Backlog, Bugs, Decisions, Context. Pick your poison.
+- **Priority Filtering** — P1s only? Just bugs? We got you.
+- **Clickable Everything** — Click a task. See the details. Edit things. Wild.
 
-### Task Editing
-- **Full Edit Mode** — Name, priority, due date, estimate, URL, and tags
-- **Complete/Uncomplete** — Toggle completion status with one click
-- **Notes** — Add and delete notes directly from the modal
-- **Real-time Sync** — All changes sync back to RTM instantly
+### The Editing Stuff
+- **Full Edit Mode** — Name, priority, due date, estimate, URL, tags. The works.
+- **Complete/Uncomplete** — One click. Very satisfying. Click it again if you regret it.
+- **Notes** — Add notes. Delete notes. Notes notes notes.
+- **Real-time Sync** — Changes go to RTM instantly. Like magic, but real.
 
-### Trends & Analytics
-- **Velocity Tracking** — See how your task counts change over time
-- **Stacked Charts** — Visualize TODO, Backlog, and Bugs trends
-- **Project Filtering** — Focus on one project or see everything
-
-### Power User Features
-- **Keyboard Shortcuts** — Vim-style navigation (`/` search, `q` quick add, `?` help)
-- **Dark Mode** — Full dark mode support
-- **Mobile Ready** — Responsive design for all devices
+### The Fancy Stuff
+- **Velocity Charts** — Watch your task counts change over time. Feel things.
+- **Keyboard Shortcuts** — `/` to search, `q` to quick add, `?` for help. You're welcome.
+- **Dark Mode** — Because it's 2024. Or 2025. Whatever year it is.
 
 ---
 
 ## Quick Start
 
-### Prerequisites
+### You'll Need
 
-- [Remember The Milk](https://www.rememberthemilk.com) account (free tier works)
-- RTM API credentials from [rememberthemilk.com/services/api/keys.rtm](https://www.rememberthemilk.com/services/api/keys.rtm)
-- Node.js 18+
+- A [Remember The Milk](https://www.rememberthemilk.com) account (free works)
+- RTM API credentials ([get them here](https://www.rememberthemilk.com/services/api/keys.rtm))
+- Node.js 18+ (sorry, we're modern)
 
-### 1. Clone and install
+### 1. Clone it
 
 ```bash
 git clone https://github.com/donkitchen/milk-pm.git
@@ -84,30 +72,30 @@ cd milk-pm
 npm install
 ```
 
-### 2. Configure environment
+### 2. Configure it
 
 ```bash
 cp .env.example .env.local
 ```
 
-Edit `.env.local`:
+Add your RTM stuff:
 
 ```env
-RTM_API_KEY=your_api_key_here
-RTM_SHARED_SECRET=your_shared_secret_here
+RTM_API_KEY=your_key_here
+RTM_SHARED_SECRET=your_secret_here
 ```
 
-### 3. Authenticate with RTM
+### 3. Authenticate
 
 ```bash
 npm run auth
 ```
 
-This opens a browser for authorization and writes your `RTM_AUTH_TOKEN` to `.env.local`.
+Browser opens. You click approve. Token gets saved. Easy.
 
-> **Using milk-mcp?** Copy your credentials from `~/.config/milk-mcp/config` and skip this step.
+> **Already using milk-mcp?** Just copy from `~/.config/milk-mcp/config`. Skip this step. Live your life.
 
-### 4. Configure projects
+### 4. Set up projects
 
 Edit `projects.json`:
 
@@ -115,115 +103,121 @@ Edit `projects.json`:
 {
   "projects": [
     {
-      "slug": "my-project",
-      "name": "My Project",
-      "description": "Build something amazing",
-      "color": "blue",
-      "url": "https://github.com/you/my-project",
+      "slug": "world-domination",
+      "name": "World Domination",
+      "description": "Phase 1: Make a todo app",
+      "color": "purple",
       "lists": {
-        "todo":      "My Project - TODO",
-        "backlog":   "My Project - Backlog",
-        "bugs":      "My Project - Bugs",
-        "decisions": "My Project - Decisions",
-        "context":   "My Project - Context"
+        "todo":      "World Domination - TODO",
+        "backlog":   "World Domination - Backlog",
+        "bugs":      "World Domination - Bugs",
+        "decisions": "World Domination - Decisions",
+        "context":   "World Domination - Context"
       }
     }
   ]
 }
 ```
 
-**Available colors:** `blue` `teal` `purple` `amber` `green` `red` `gray`
+**Colors:** `blue` `teal` `purple` `amber` `green` `red` `gray`
 
-### 5. Run locally
+### 5. Run it
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [localhost:3000](http://localhost:3000). Bask in glory.
 
 ---
 
 ## Deploy
 
-### Vercel (Recommended)
+### Vercel (easy mode)
 
 ```bash
 npx vercel
 ```
 
-Add environment variables in Vercel:
+Add env vars. Done. That's it. Go home.
 
-| Variable | Value |
+| Variable | What it is |
 |---|---|
-| `RTM_API_KEY` | Your RTM API key |
-| `RTM_SHARED_SECRET` | Your RTM shared secret |
-| `RTM_AUTH_TOKEN` | Token from `npm run auth` |
-
----
-
-## Using with milk-mcp
-
-[milk-mcp](https://github.com/donkitchen/milk-mcp) is an MCP server that gives Claude Code persistent memory through RTM. It creates five lists per project:
-
-```
-CC: [project-name] - TODO
-CC: [project-name] - Backlog
-CC: [project-name] - Bugs
-CC: [project-name] - Decisions
-CC: [project-name] - Context
-```
-
-milk-pm works seamlessly with this convention. If you're using milk-mcp, your credentials are already set up — just copy them from `~/.config/milk-mcp/config`.
+| `RTM_API_KEY` | Your API key |
+| `RTM_SHARED_SECRET` | Your secret |
+| `RTM_AUTH_TOKEN` | The token from step 3 |
 
 ---
 
 ## Keyboard Shortcuts
 
-| Key | Action |
-|-----|--------|
-| `/` | Focus search |
-| `q` | Quick add task |
+Because clicking is for people with time.
+
+| Key | What it does |
+|-----|--------------|
+| `/` | Search |
+| `q` | Quick add |
 | `g` `h` | Go to history |
-| `?` | Show help |
-| `Esc` | Close modal / cancel |
+| `?` | Help (it's this, but in a modal) |
+| `Esc` | Close stuff |
+
+---
+
+## Using with milk-mcp
+
+[milk-mcp](https://github.com/donkitchen/milk-mcp) gives Claude Code persistent memory through RTM. It creates lists like:
+
+```
+CC: project-name - TODO
+CC: project-name - Backlog
+CC: project-name - Bugs
+CC: project-name - Decisions
+CC: project-name - Context
+```
+
+milk-pm works with these out of the box. Same credentials. Zero setup. Maximum laziness achieved.
 
 ---
 
 ## Tech Stack
 
-- **Framework:** Next.js 15 (App Router)
-- **Styling:** Tailwind CSS
-- **Charts:** Recharts
-- **Database:** Supabase (for trends/snapshots)
-- **Auth:** Supabase Auth with GitHub
-- **Deployment:** Vercel
+For the curious:
+
+- **Next.js 15** — App Router, because we live in the future
+- **Tailwind** — CSS but make it utility
+- **Recharts** — Charts that actually look good
+- **Supabase** — Auth + database + magic
+- **Vercel** — Deploy button go brrrr
 
 ---
 
-## The milk.tools Suite
+## The milk.tools Universe
 
-milk-pm is part of [milk.tools](https://milk.tools) — a collection of productivity tools built on Remember The Milk.
+milk-pm is part of [milk.tools](https://milk.tools) — a collection of productivity tools built on RTM.
 
-| Tool | Description |
+| Tool | What it does |
 |------|-------------|
-| **milk-pm** | Project management dashboard |
-| **milk-mcp** | MCP server for Claude Code |
+| **milk-pm** | This. You're reading it. |
+| **milk-mcp** | Claude Code + RTM. Memory for your AI. |
+
+More coming. Probably. Maybe. We'll see.
 
 ---
 
 ## License
 
-MIT
+MIT — Do whatever. Credit appreciated but not required. We're chill.
 
 ---
 
 <p align="center">
   <a href="https://milk.tools">
-    <img src="public/milktools-mascot.jpg" alt="milk.tools" width="60" />
+    <img src="public/milktools-mascot.jpg" alt="milk.tools" width="40" />
+    <img src="public/milktools-banner.jpg" alt="milk.tools" width="120" />
   </a>
 </p>
 
 <p align="center">
-  Made with RTM by <a href="https://milk.tools">milk.tools</a>
+  <em>probably unnecessary. definitely useful.</em><br>
+  <a href="https://milk.tools">milk.tools</a>
 </p>

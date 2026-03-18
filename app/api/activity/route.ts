@@ -1,20 +1,42 @@
 import { NextResponse } from 'next/server'
 import { searchTasks, getLists, getFirstTask } from '../../../lib/rtm'
 import { RTM_FILTERS } from '../../../lib/filters'
+import { getProjectConfigs } from '../../../lib/projects'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    // Fetch recently modified tasks and completed tasks
-    const [modifiedTasks, completedTasks, lists] = await Promise.all([
+    // Fetch recently modified tasks, completed tasks, lists, and project configs
+    const [modifiedTasks, completedTasks, lists, configs] = await Promise.all([
       searchTasks(RTM_FILTERS.recentlyModified, { cache: false }),
       searchTasks(RTM_FILTERS.completedToday, { cache: false }),
       getLists(),
+      getProjectConfigs(),
     ])
 
     // Build list name lookup
     const listMap = new Map(lists.map((l) => [l.id, l.name]))
+
+    // Build set of configured list IDs
+    const configuredListIds = new Set<string>()
+    const listNameToId = new Map(lists.map((l) => [l.name, l.id]))
+
+    for (const config of configs) {
+      if (!config.lists) continue
+      for (const listName of Object.values(config.lists)) {
+        if (listName) {
+          const listId = listNameToId.get(listName)
+          if (listId) {
+            configuredListIds.add(listId)
+          }
+        }
+      }
+    }
+
+    // Filter to configured lists only
+    const filteredModified = modifiedTasks.filter((t) => t.list_id && configuredListIds.has(t.list_id))
+    const filteredCompleted = completedTasks.filter((t) => t.list_id && configuredListIds.has(t.list_id))
 
     // Combine and dedupe by task ID
     const taskMap = new Map<string, {
@@ -30,7 +52,7 @@ export async function GET() {
     }>()
 
     // Process completed tasks first (higher priority activity)
-    for (const series of completedTasks) {
+    for (const series of filteredCompleted) {
       const task = getFirstTask(series)
       if (!task) continue
 
@@ -48,7 +70,7 @@ export async function GET() {
     }
 
     // Process modified tasks
-    for (const series of modifiedTasks) {
+    for (const series of filteredModified) {
       if (taskMap.has(series.id)) continue // Skip if already added as completed
 
       const task = getFirstTask(series)
