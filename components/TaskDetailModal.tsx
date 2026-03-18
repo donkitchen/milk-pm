@@ -53,12 +53,15 @@ export default function TaskDetailModal({ taskId, onClose }: Props) {
   const [task, setTask] = useState<TaskDetail | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     if (!taskId) {
       setTask(null)
+      setCopied(false)
       return
     }
+    setCopied(false)
 
     async function fetchTask() {
       setLoading(true)
@@ -253,9 +256,24 @@ export default function TaskDetailModal({ taskId, onClose }: Props) {
 
         {/* Footer */}
         <div className="px-6 py-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800">
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-            Press <kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-[10px]">Esc</kbd> to close
-          </p>
+          <div className="flex items-center justify-between">
+            {task && (
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(task.id)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 1500)
+                }}
+                className="text-[10px] text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 font-mono transition-colors"
+                title="Click to copy ID"
+              >
+                {copied ? 'Copied!' : `ID: ${task.id}`}
+              </button>
+            )}
+            <p className="text-xs text-gray-500 dark:text-gray-400 ml-auto">
+              Press <kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-[10px]">Esc</kbd> to close
+            </p>
+          </div>
         </div>
       </div>
     </div>

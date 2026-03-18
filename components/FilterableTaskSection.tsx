@@ -5,6 +5,7 @@ import { RTMTaskSeries } from '../lib/rtm'
 import { ListRole } from '../lib/projects'
 import { LIST_ROLE_META } from '../types/projects'
 import PriorityFilter, { PriorityValue } from './PriorityFilter'
+import TaskDetailModal from './TaskDetailModal'
 
 interface Props {
   role: ListRole
@@ -57,6 +58,7 @@ const PRIORITY_ORDER: Record<string, number> = {
 export default function FilterableTaskSection({ role, tasks, hasRtmList }: Props) {
   const [priorityFilter, setPriorityFilter] = useState<PriorityValue>('all')
   const [sortBy, setSortBy] = useState<SortOption>('priority')
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
 
   const meta = LIST_ROLE_META[role]
 
@@ -175,14 +177,15 @@ export default function FilterableTaskSection({ role, tasks, hasRtmList }: Props
               return (
                 <li
                   key={series.id}
-                  className="flex items-start gap-3 py-3 text-sm"
+                  onClick={() => setSelectedTaskId(series.id)}
+                  className="flex items-start gap-3 py-3 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 -mx-4 px-4 transition-colors"
                 >
                   {/* Priority dot */}
                   <span className="mt-0.5 text-xs w-4 shrink-0">{priorityIcon}</span>
 
                   {/* Name + tags */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-gray-800 dark:text-gray-200 truncate">
+                    <p className="text-gray-800 dark:text-gray-200 truncate hover:text-blue-600 dark:hover:text-blue-400">
                       {series.name}
                     </p>
                     {tags.length > 0 && (
@@ -217,6 +220,11 @@ export default function FilterableTaskSection({ role, tasks, hasRtmList }: Props
           </ul>
         )}
       </div>
+
+      <TaskDetailModal
+        taskId={selectedTaskId}
+        onClose={() => setSelectedTaskId(null)}
+      />
     </section>
   )
 }
