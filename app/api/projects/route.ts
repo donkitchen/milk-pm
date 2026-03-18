@@ -2,9 +2,20 @@ import { NextResponse } from 'next/server'
 import { promises as fs } from 'fs'
 import path from 'path'
 import { getLists } from '../../../lib/rtm'
-import { getProjectConfigs, ProjectConfig } from '../../../lib/projects'
+import { ProjectConfig } from '../../../lib/projects'
 
 const PROJECTS_FILE = path.join(process.cwd(), 'projects.json')
+
+// Read projects.json directly (not cached import)
+async function readProjectsFile(): Promise<ProjectConfig[]> {
+  try {
+    const content = await fs.readFile(PROJECTS_FILE, 'utf-8')
+    const data = JSON.parse(content)
+    return data.projects ?? []
+  } catch {
+    return []
+  }
+}
 
 export interface DiscoveredProject {
   slug: string
@@ -25,7 +36,7 @@ export async function GET() {
   try {
     const [rtmLists, existingConfigs] = await Promise.all([
       getLists(),
-      Promise.resolve(getProjectConfigs()),
+      readProjectsFile(),
     ])
 
     // Find all lists matching "CC: * - TODO" pattern
