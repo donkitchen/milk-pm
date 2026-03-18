@@ -1,0 +1,19 @@
+{
+  "projects": [
+    {
+      "slug": "my-app",
+      "name": "My App",
+      "description": "Example project using milk-mcp conventions",
+      "color": "blue",
+      "url": "https://github.com/you/my-app",
+      "convention": "milk-mcp",
+      "lists": {
+        "todo": "CC: my-app - TODO",
+        "backlog": "CC: my-app - Backlog",
+        "bugs": "CC: my-app - Bugs",
+        "decisions": "CC: my-app - Decisions",
+        "context": "CC: my-app - Context"
+      }
+    }
+  ]
+}
