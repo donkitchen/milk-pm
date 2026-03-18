@@ -31,12 +31,20 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
+# env files - NEVER commit these
 .env
-.env.local
-.env*.local
-.env.vercel*
-.env.check
+.env.*
+!.env.example
+*.env
+.env*
+!.env.example
+
+# secrets
+*.pem
+*.key
+*credentials*
+*secret*
+!.gitignore
 
 # vercel
 .vercel
