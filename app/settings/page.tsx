@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { createClient } from '../../lib/supabase/client'
+import type { User } from '@supabase/supabase-js'
 import { ProjectConfig } from '../../lib/projects'
 
 interface DiscoveredProject {
@@ -36,10 +39,23 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editingSlug, setEditingSlug] = useState<string | null>(null)
+  const [user, setUser] = useState<User | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
+    const supabase = createClient()
+    // Get user
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user)
+    })
     fetchProjects()
   }, [])
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/')
+  }
 
   async function fetchProjects() {
     try {
@@ -148,14 +164,45 @@ export default function SettingsPage() {
             Manage which projects appear on your dashboard
           </p>
         </div>
-        <button
-          onClick={saveProjects}
-          disabled={saving}
-          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-        >
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={saveProjects}
+            disabled={saving}
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          >
+            {saving ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </div>
+
+      {/* User info */}
+      {user && (
+        <div className="flex items-center justify-between mb-6 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-100 dark:border-gray-800">
+          <div className="flex items-center gap-3">
+            {user.user_metadata?.avatar_url && (
+              <img
+                src={user.user_metadata.avatar_url}
+                alt=""
+                className="w-8 h-8 rounded-full"
+              />
+            )}
+            <div>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                {user.user_metadata?.full_name || user.email}
+              </p>
+              <p className="text-xs text-gray-500">
+                {user.user_metadata?.user_name && `@${user.user_metadata.user_name}`}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleSignOut}
+            className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            Sign out
+          </button>
+        </div>
+      )}
 
       {error && (
         <div className="mb-6 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm">

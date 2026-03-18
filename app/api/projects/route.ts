@@ -1,21 +1,7 @@
 import { NextResponse } from 'next/server'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { createClient } from '../../../lib/supabase/server'
 import { getLists } from '../../../lib/rtm'
-import { ProjectConfig } from '../../../lib/projects'
-
-const PROJECTS_FILE = path.join(process.cwd(), 'projects.json')
-
-// Read projects.json directly (not cached import)
-async function readProjectsFile(): Promise<ProjectConfig[]> {
-  try {
-    const content = await fs.readFile(PROJECTS_FILE, 'utf-8')
-    const data = JSON.parse(content)
-    return data.projects ?? []
-  } catch {
-    return []
-  }
-}
+import type { ProjectConfig } from '../../../lib/supabase/types'
 
 export interface DiscoveredProject {
   slug: string
@@ -31,13 +17,27 @@ export interface DiscoveredProject {
   config: ProjectConfig | null
 }
 
-// GET: Discover all milk-mcp projects from RTM and merge with projects.json
+// GET: Discover all milk-mcp projects from RTM and merge with Supabase
 export async function GET() {
   try {
-    const [rtmLists, existingConfigs] = await Promise.all([
+    const supabase = await createClient()
+
+    // Check auth
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Fetch RTM lists and user's saved configs in parallel
+    const [rtmLists, { data: savedConfigs }] = await Promise.all([
       getLists(),
-      readProjectsFile(),
+      supabase
+        .from('project_configs')
+        .select('*')
+        .eq('user_id', user.id),
     ])
+
+    const existingConfigs = savedConfigs ?? []
 
     // Find all lists matching "CC: * - TODO" pattern
     const todoLists = rtmLists.filter((l) =>
@@ -46,12 +46,10 @@ export async function GET() {
 
     // Extract project names and build discovered projects
     const discovered: DiscoveredProject[] = todoLists.map((todoList) => {
-      // Extract project name: "CC: my-app - TODO" -> "my-app"
       const match = todoList.name.match(/^CC:\s*(.+?)\s*-\s*TODO$/i)
       const projectName = match?.[1]?.trim() ?? todoList.name
       const slug = projectName.toLowerCase().replace(/\s+/g, '-')
 
-      // Check if this project is already in projects.json
       const existing = existingConfigs.find((c) => c.slug === slug)
 
       return {
@@ -85,29 +83,56 @@ export async function GET() {
   }
 }
 
-// POST: Update projects.json
+// POST: Save project configs to Supabase
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { projects } = body as { projects: ProjectConfig[] }
+    const supabase = await createClient()
 
-    if (!Array.isArray(projects)) {
-      return NextResponse.json(
-        { error: 'Invalid projects array' },
-        { status: 400 }
-      )
+    // Check auth
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Write to projects.json
-    const content = JSON.stringify({ projects }, null, 2) + '\n'
-    await fs.writeFile(PROJECTS_FILE, content, 'utf-8')
+    const body = await request.json()
+    const { projects } = body as { projects: Omit<ProjectConfig, 'id' | 'user_id' | 'created_at' | 'updated_at'>[] }
+
+    if (!Array.isArray(projects)) {
+      return NextResponse.json({ error: 'Invalid projects array' }, { status: 400 })
+    }
+
+    // Delete all existing configs for this user
+    await supabase
+      .from('project_configs')
+      .delete()
+      .eq('user_id', user.id)
+
+    // Insert new configs
+    if (projects.length > 0) {
+      const { error } = await supabase
+        .from('project_configs')
+        .insert(
+          projects.map((p) => ({
+            user_id: user.id,
+            slug: p.slug,
+            name: p.name,
+            description: p.description || null,
+            color: p.color,
+            url: p.url || null,
+            convention: p.convention || 'milk-mcp',
+            lists: p.lists,
+          }))
+        )
+
+      if (error) {
+        console.error('Supabase insert error:', error)
+        return NextResponse.json({ error: 'Failed to save projects' }, { status: 500 })
+      }
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Failed to save projects:', error)
-    return NextResponse.json(
-      { error: 'Failed to save projects' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to save projects' }, { status: 500 })
   }
 }

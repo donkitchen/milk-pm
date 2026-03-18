@@ -1,5 +1,5 @@
+import { createClient } from '@supabase/supabase-js'
 import { getLists, getTasksForList, normalizeTaskSeries, RTMList } from './rtm'
-import projectsConfig from '../projects.json'
 
 // --- Types ---
 
@@ -41,14 +41,42 @@ function buildListIndex(rtmLists: RTMList[]): Map<string, string> {
   return index
 }
 
-// --- Public API ---
-
-export function getProjectConfigs(): ProjectConfig[] {
-  return projectsConfig.projects as ProjectConfig[]
+// Create a service client for server-side reads (no auth context needed)
+function getSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 }
 
-export function getProjectBySlug(slug: string): ProjectConfig | undefined {
-  return getProjectConfigs().find((p) => p.slug === slug)
+// --- Public API ---
+
+export async function getProjectConfigs(): Promise<ProjectConfig[]> {
+  const supabase = getSupabaseClient()
+
+  const { data, error } = await supabase
+    .from('project_configs')
+    .select('slug, name, description, color, url, convention, lists')
+
+  if (error) {
+    console.error('Failed to fetch project configs:', error)
+    return []
+  }
+
+  return (data ?? []).map((row) => ({
+    slug: row.slug,
+    name: row.name,
+    description: row.description ?? undefined,
+    color: row.color,
+    url: row.url ?? undefined,
+    convention: row.convention ?? 'milk-mcp',
+    lists: row.lists as Record<ListRole, string>,
+  }))
+}
+
+export async function getProjectBySlug(slug: string): Promise<ProjectConfig | undefined> {
+  const configs = await getProjectConfigs()
+  return configs.find((p) => p.slug === slug)
 }
 
 export async function getProjectSummaries(): Promise<ProjectSummary[]> {
@@ -84,7 +112,7 @@ export async function getProjectSummaries(): Promise<ProjectSummary[]> {
         config,
         stats,
         totalOpen,
-        lastContext: null, // Phase 2: parse context list for timestamp
+        lastContext: null,
       }
     })
   )
@@ -93,7 +121,7 @@ export async function getProjectSummaries(): Promise<ProjectSummary[]> {
 }
 
 export async function getProjectDetail(slug: string): Promise<ProjectSummary | null> {
-  const config = getProjectBySlug(slug)
+  const config = await getProjectBySlug(slug)
   if (!config) return null
 
   const rtmLists = await getLists()
