@@ -237,6 +237,196 @@ export async function uncompleteTask(
   )
 }
 
+// --- Task editing ---
+
+export async function setTaskName(
+  listId: string,
+  taskseriesId: string,
+  taskId: string,
+  name: string
+): Promise<void> {
+  const timeline = await getTimeline()
+
+  await rtmRequestWithOptions(
+    'rtm.tasks.setName',
+    {
+      timeline,
+      list_id: listId,
+      taskseries_id: taskseriesId,
+      task_id: taskId,
+      name,
+    },
+    { cache: 'no-store' }
+  )
+}
+
+export async function setTaskPriority(
+  listId: string,
+  taskseriesId: string,
+  taskId: string,
+  priority: string // '1', '2', '3', or 'N' (none)
+): Promise<void> {
+  const timeline = await getTimeline()
+
+  await rtmRequestWithOptions(
+    'rtm.tasks.setPriority',
+    {
+      timeline,
+      list_id: listId,
+      taskseries_id: taskseriesId,
+      task_id: taskId,
+      priority: priority === 'N' ? '0' : priority,
+    },
+    { cache: 'no-store' }
+  )
+}
+
+export async function setTaskDueDate(
+  listId: string,
+  taskseriesId: string,
+  taskId: string,
+  due: string // Empty string to clear, or date string
+): Promise<void> {
+  const timeline = await getTimeline()
+
+  const params: Record<string, string> = {
+    timeline,
+    list_id: listId,
+    taskseries_id: taskseriesId,
+    task_id: taskId,
+    parse: '1',
+  }
+  if (due) {
+    params.due = due
+  }
+
+  await rtmRequestWithOptions('rtm.tasks.setDueDate', params, { cache: 'no-store' })
+}
+
+export async function setTaskEstimate(
+  listId: string,
+  taskseriesId: string,
+  taskId: string,
+  estimate: string // Empty string to clear, or duration like "1 hour", "30 min"
+): Promise<void> {
+  const timeline = await getTimeline()
+
+  await rtmRequestWithOptions(
+    'rtm.tasks.setEstimate',
+    {
+      timeline,
+      list_id: listId,
+      taskseries_id: taskseriesId,
+      task_id: taskId,
+      estimate,
+    },
+    { cache: 'no-store' }
+  )
+}
+
+export async function setTaskURL(
+  listId: string,
+  taskseriesId: string,
+  taskId: string,
+  url: string // Empty string to clear
+): Promise<void> {
+  const timeline = await getTimeline()
+
+  await rtmRequestWithOptions(
+    'rtm.tasks.setURL',
+    {
+      timeline,
+      list_id: listId,
+      taskseries_id: taskseriesId,
+      task_id: taskId,
+      url,
+    },
+    { cache: 'no-store' }
+  )
+}
+
+export async function addTaskTags(
+  listId: string,
+  taskseriesId: string,
+  taskId: string,
+  tags: string // Comma-separated tags
+): Promise<void> {
+  const timeline = await getTimeline()
+
+  await rtmRequestWithOptions(
+    'rtm.tasks.addTags',
+    {
+      timeline,
+      list_id: listId,
+      taskseries_id: taskseriesId,
+      task_id: taskId,
+      tags,
+    },
+    { cache: 'no-store' }
+  )
+}
+
+export async function removeTaskTags(
+  listId: string,
+  taskseriesId: string,
+  taskId: string,
+  tags: string // Comma-separated tags
+): Promise<void> {
+  const timeline = await getTimeline()
+
+  await rtmRequestWithOptions(
+    'rtm.tasks.removeTags',
+    {
+      timeline,
+      list_id: listId,
+      taskseries_id: taskseriesId,
+      task_id: taskId,
+      tags,
+    },
+    { cache: 'no-store' }
+  )
+}
+
+export async function addTaskNote(
+  listId: string,
+  taskseriesId: string,
+  taskId: string,
+  title: string,
+  body: string
+): Promise<RTMNote> {
+  const timeline = await getTimeline()
+
+  const rsp = await rtmRequestWithOptions<{ note: RTMNote }>(
+    'rtm.tasks.notes.add',
+    {
+      timeline,
+      list_id: listId,
+      taskseries_id: taskseriesId,
+      task_id: taskId,
+      note_title: title,
+      note_text: body,
+    },
+    { cache: 'no-store' }
+  )
+
+  return rsp.note
+}
+
+export async function deleteTaskNote(
+  noteId: string
+): Promise<void> {
+  const timeline = await getTimeline()
+
+  await rtmRequestWithOptions(
+    'rtm.tasks.notes.delete',
+    {
+      timeline,
+      note_id: noteId,
+    },
+    { cache: 'no-store' }
+  )
+}
+
 // --- Core request with configurable fetch options ---
 
 async function rtmRequestWithOptions<T = unknown>(
