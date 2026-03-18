@@ -62,29 +62,34 @@ export default async function DashboardPage() {
         {/* Due Date Sections */}
         <DueSection />
 
-        {/* Project grid */}
-        {summaries.length === 0 ? (
-          <div className="text-center py-20 text-gray-400 dark:text-gray-600">
-            <p className="text-lg">No projects enabled.</p>
-            <p className="text-sm mt-2">
-              Go to{' '}
-              <Link href="/settings" className="text-blue-500 hover:underline">
-                Settings
-              </Link>{' '}
-              to enable your milk-mcp projects.
-            </p>
+        {/* Main content grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Projects - takes 2 columns on large screens */}
+          <div className="lg:col-span-2">
+            {summaries.length === 0 ? (
+              <div className="text-center py-20 text-gray-400 dark:text-gray-600">
+                <p className="text-lg">No projects enabled.</p>
+                <p className="text-sm mt-2">
+                  Go to{' '}
+                  <Link href="/settings" className="text-blue-500 hover:underline">
+                    Settings
+                  </Link>{' '}
+                  to enable your milk-mcp projects.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {summaries.map((summary) => (
+                  <ProjectCard key={summary.config.slug} summary={summary} />
+                ))}
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {summaries.map((summary) => (
-              <ProjectCard key={summary.config.slug} summary={summary} />
-            ))}
-          </div>
-        )}
 
-        {/* Activity Feed */}
-        <div className="mt-8">
-          <ActivityFeed />
+          {/* Activity Feed - sidebar on large screens */}
+          <div className="lg:col-span-1">
+            <ActivityFeed />
+          </div>
         </div>
       </main>
     </DashboardShell>

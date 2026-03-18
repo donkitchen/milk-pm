@@ -13,7 +13,7 @@ export default function QuickAdd({
   listId,
   listName,
   onTaskAdded,
-  placeholder = 'Add a task... (try "Buy milk tomorrow !1 #shopping")',
+  placeholder = 'Add a task... (try "Fix login bug tomorrow !1 #frontend")',
 }: QuickAddProps) {
   const [value, setValue] = useState('')
   const [loading, setLoading] = useState(false)

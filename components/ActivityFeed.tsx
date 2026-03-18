@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import TaskDetailModal from './TaskDetailModal'
 
 interface Activity {
   id: string
@@ -52,6 +53,7 @@ export default function ActivityFeed() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchActivity() {
@@ -153,9 +155,10 @@ export default function ActivityFeed() {
               const timestamp = activity.completed ?? activity.modified
 
               return (
-                <div
+                <button
                   key={activity.id}
-                  className={`flex items-start gap-2 py-2 px-2 rounded border-l-2 ${PRIORITY_COLORS[activity.priority] ?? PRIORITY_COLORS['N']} bg-white dark:bg-gray-950`}
+                  onClick={() => setSelectedTaskId(activity.id)}
+                  className={`w-full flex items-start gap-2 py-2 px-2 rounded border-l-2 ${PRIORITY_COLORS[activity.priority] ?? PRIORITY_COLORS['N']} bg-white dark:bg-gray-950 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors text-left`}
                 >
                   <span className={`text-xs font-medium ${meta.color} w-4 text-center shrink-0 mt-0.5`}>
                     {meta.icon}
@@ -175,12 +178,17 @@ export default function ActivityFeed() {
                   <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">
                     {formatRelativeTime(timestamp)}
                   </span>
-                </div>
+                </button>
               )
             })}
           </div>
         </div>
       )}
+
+      <TaskDetailModal
+        taskId={selectedTaskId}
+        onClose={() => setSelectedTaskId(null)}
+      />
     </div>
   )
 }
