@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "auth": "npx tsx scripts/auth.ts"
+    "auth": "npx tsx scripts/auth.ts",
+    "screenshots": "npx tsx scripts/screenshots.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.9.0",
@@ -18,6 +19,7 @@
     "recharts": "^3.8.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -25,6 +27,7 @@
     "dotenv": "^16.4.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.7",
+    "playwright": "^1.58.2",
     "tailwindcss": "^4",
     "tsx": "^4.7.0",
     "typescript": "^5"

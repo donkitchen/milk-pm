@@ -57,3 +57,5 @@ next-env.d.ts
 /app/demo/
 /lib/demo-data.ts
 SCREENSHOT_PLAN.md
+/screenshots/
+/scripts/screenshots.ts
