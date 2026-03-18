@@ -65,6 +65,14 @@ export default function AboutPage() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-blue-500 mt-1">•</span>
+              <span><strong>History:</strong> See completed tasks from the past week, grouped by date (press <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm">g</kbd> <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm">h</kbd>)</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-blue-500 mt-1">•</span>
+              <span><strong>Keyboard Shortcuts:</strong> Vim-style navigation for power users (press <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-sm">?</kbd> for help)</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-blue-500 mt-1">•</span>
               <span><strong>Project Customization:</strong> Set colors, descriptions, categories, and repository links</span>
             </li>
             <li className="flex items-start gap-2">
@@ -94,22 +102,73 @@ export default function AboutPage() {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
             Keyboard Shortcuts
           </h2>
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
-              <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">/</kbd>
-              <span className="text-gray-600 dark:text-gray-400">Focus search</span>
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Navigation</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                  <div className="flex items-center gap-1">
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">g</kbd>
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">d</kbd>
+                  </div>
+                  <span className="text-gray-600 dark:text-gray-400">Go to Dashboard</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                  <div className="flex items-center gap-1">
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">g</kbd>
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">h</kbd>
+                  </div>
+                  <span className="text-gray-600 dark:text-gray-400">Go to History</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                  <div className="flex items-center gap-1">
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">g</kbd>
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">s</kbd>
+                  </div>
+                  <span className="text-gray-600 dark:text-gray-400">Go to Settings</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                  <div className="flex items-center gap-1">
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">g</kbd>
+                    <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">a</kbd>
+                  </div>
+                  <span className="text-gray-600 dark:text-gray-400">Go to About</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
-              <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">q</kbd>
-              <span className="text-gray-600 dark:text-gray-400">Quick add task</span>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Actions</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                  <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">/</kbd>
+                  <span className="text-gray-600 dark:text-gray-400">Focus search</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                  <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">q</kbd>
+                  <span className="text-gray-600 dark:text-gray-400">Quick add task</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                  <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">?</kbd>
+                  <span className="text-gray-600 dark:text-gray-400">Show shortcuts</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                  <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">Esc</kbd>
+                  <span className="text-gray-600 dark:text-gray-400">Close dialogs</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
-              <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">Esc</kbd>
-              <span className="text-gray-600 dark:text-gray-400">Close dialogs</span>
-            </div>
-            <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
-              <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">↑↓</kbd>
-              <span className="text-gray-600 dark:text-gray-400">Navigate results</span>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">In Search/Results</h3>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                  <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">↑↓</kbd>
+                  <span className="text-gray-600 dark:text-gray-400">Navigate results</span>
+                </div>
+                <div className="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-900 rounded">
+                  <kbd className="px-2 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded font-mono">Enter</kbd>
+                  <span className="text-gray-600 dark:text-gray-400">Select result</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
