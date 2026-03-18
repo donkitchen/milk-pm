@@ -1,4 +1,10 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+  description: 'View all your projects and tasks at a glance',
+}
 import { getProjectSummaries } from '../lib/projects'
 import ProjectCard from '../components/ProjectCard'
 import StatBar from '../components/StatBar'
@@ -35,6 +41,12 @@ export default async function DashboardPage() {
               className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
               History
+            </Link>
+            <Link
+              href="/trends"
+              className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            >
+              Trends
             </Link>
             <Link
               href="/about"

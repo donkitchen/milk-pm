@@ -1,6 +1,7 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getProjectDetail } from '../../../lib/projects'
+import { getProjectDetail, getProjectBySlug } from '../../../lib/projects'
 import { getTasksForList, normalizeTaskSeries } from '../../../lib/rtm'
 import FilterableTaskSection from '../../../components/FilterableTaskSection'
 import { ListRole } from '../../../lib/projects'
@@ -9,6 +10,16 @@ export const dynamic = 'force-dynamic'
 
 interface Props {
   params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const project = await getProjectBySlug(slug)
+
+  return {
+    title: project?.name ?? slug,
+    description: project?.description ?? `Tasks for ${project?.name ?? slug}`,
+  }
 }
 
 export default async function ProjectDetailPage({ params }: Props) {

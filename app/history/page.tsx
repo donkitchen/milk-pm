@@ -1,4 +1,10 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'History',
+  description: 'View completed tasks from the past week',
+}
 import { searchTasks, getFirstTask, getTags, getLists } from '../../lib/rtm'
 import { RTM_FILTERS } from '../../lib/filters'
 

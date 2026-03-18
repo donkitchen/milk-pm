@@ -11,6 +11,7 @@ const SHORTCUTS = [
   { category: 'Navigation', shortcuts: [
     { keys: ['g', 'd'], description: 'Go to Dashboard' },
     { keys: ['g', 'h'], description: 'Go to History' },
+    { keys: ['g', 't'], description: 'Go to Trends' },
     { keys: ['g', 's'], description: 'Go to Settings' },
     { keys: ['g', 'a'], description: 'Go to About' },
   ]},

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { RTMTaskSeries } from '../lib/rtm'
+import TaskDetailModal from './TaskDetailModal'
 
 interface DueGroup {
   label: string
@@ -41,6 +42,7 @@ export default function DueSection() {
   const [groups, setGroups] = useState<DueGroup[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['Overdue']))
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchDueTasks() {
@@ -146,9 +148,10 @@ export default function DueSection() {
                   const due = task?.due ?? ''
 
                   return (
-                    <div
+                    <button
                       key={series.id}
-                      className="flex items-center gap-2 text-sm py-1"
+                      onClick={() => setSelectedTaskId(series.id)}
+                      className="w-full flex items-center gap-2 text-sm py-1.5 px-2 -mx-2 rounded hover:bg-white/50 dark:hover:bg-gray-800/50 transition-colors text-left"
                     >
                       <span className="w-4 text-center">{getPriorityEmoji(priority)}</span>
                       <span className="flex-1 text-gray-700 dark:text-gray-300 truncate">
@@ -165,7 +168,7 @@ export default function DueSection() {
                           {formatDueDate(due)}
                         </span>
                       )}
-                    </div>
+                    </button>
                   )
                 })}
                 {group.tasks.length > 10 && (
@@ -178,6 +181,11 @@ export default function DueSection() {
           </div>
         )
       })}
+
+      <TaskDetailModal
+        taskId={selectedTaskId}
+        onClose={() => setSelectedTaskId(null)}
+      />
     </div>
   )
 }

@@ -2,8 +2,11 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'milk-pm',
-  description: 'A configurable RTM project dashboard',
+  title: {
+    default: 'milk-pm',
+    template: '%s | milk-pm',
+  },
+  description: 'Project management dashboard for Remember The Milk',
 }
 
 export default function RootLayout({

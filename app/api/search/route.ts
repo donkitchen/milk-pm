@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { searchTasks, RTMTaskSeries, getFirstTask, getLists } from '../../../lib/rtm'
 import { buildSearchFilter } from '../../../lib/filters'
+import { getProjectConfigs } from '../../../lib/projects'
 
 export interface SearchResult {
   task: RTMTaskSeries
@@ -20,17 +21,36 @@ export async function GET(request: Request) {
     // Build the search filter
     const filter = buildSearchFilter(query, includeCompleted)
 
-    // Fetch tasks and lists in parallel
-    const [tasks, lists] = await Promise.all([
+    // Fetch tasks, lists, and configs in parallel
+    const [tasks, lists, configs] = await Promise.all([
       searchTasks(filter, { cache: false }),
       getLists(),
+      getProjectConfigs(),
     ])
 
     // Build list name lookup
     const listMap = new Map(lists.map((l) => [l.id, l.name]))
+    const listNameToId = new Map(lists.map((l) => [l.name, l.id]))
+
+    // Build a set of all configured list IDs
+    const configuredListIds = new Set<string>()
+    for (const config of configs) {
+      if (!config.lists) continue
+      for (const listName of Object.values(config.lists)) {
+        if (listName) {
+          const listId = listNameToId.get(listName)
+          if (listId) {
+            configuredListIds.add(listId)
+          }
+        }
+      }
+    }
+
+    // Filter to only tasks in configured project lists
+    const filteredTasks = tasks.filter((t) => t.list_id && configuredListIds.has(t.list_id))
 
     // Sort by priority, then by due date
-    const sortedTasks = [...tasks].sort((a, b) => {
+    const sortedTasks = [...filteredTasks].sort((a, b) => {
       const aTask = getFirstTask(a)
       const bTask = getFirstTask(b)
 

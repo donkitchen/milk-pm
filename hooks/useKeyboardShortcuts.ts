@@ -91,6 +91,10 @@ export function useDefaultShortcuts(options: {
               e.preventDefault()
               router.push('/about')
               break
+            case 't':
+              e.preventDefault()
+              router.push('/trends')
+              break
           }
         }
         document.addEventListener('keydown', handler, { once: true })

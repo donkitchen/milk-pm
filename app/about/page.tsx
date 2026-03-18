@@ -1,4 +1,10 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'About',
+  description: 'Learn about milk-pm and its features',
+}
 
 export default function AboutPage() {
   return (

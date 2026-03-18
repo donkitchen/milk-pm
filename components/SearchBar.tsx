@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import type { RTMTaskSeries } from '../lib/rtm'
+import TaskDetailModal from './TaskDetailModal'
 
 interface SearchResult {
   task: RTMTaskSeries
@@ -49,6 +50,7 @@ export default function SearchBar() {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -175,7 +177,7 @@ export default function SearchBar() {
               <button
                 key={result.task.id}
                 onClick={() => {
-                  console.log('Clicked:', result.task.name)
+                  setSelectedTaskId(result.task.id)
                   setIsOpen(false)
                 }}
                 className={`w-full px-4 py-2 flex items-center gap-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 ${
@@ -215,6 +217,11 @@ export default function SearchBar() {
           No tasks found
         </div>
       )}
+
+      <TaskDetailModal
+        taskId={selectedTaskId}
+        onClose={() => setSelectedTaskId(null)}
+      />
     </div>
   )
 }
