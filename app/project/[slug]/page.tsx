@@ -2,8 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getProjectDetail } from '../../../lib/projects'
 import { getTasksForList, normalizeTaskSeries } from '../../../lib/rtm'
-import TaskList from '../../../components/TaskList'
-import { LIST_ROLE_META } from '../../../types/projects'
+import FilterableTaskSection from '../../../components/FilterableTaskSection'
 import { ListRole } from '../../../lib/projects'
 
 export const dynamic = 'force-dynamic'
@@ -69,30 +68,16 @@ export default async function ProjectDetailPage({ params }: Props) {
       {/* Lists */}
       <div className="space-y-8">
         {roles.map((role) => {
-          const meta = LIST_ROLE_META[role]
           const tasks = tasksByRole[role] ?? []
           const stat = stats.find((s) => s.role === role)
 
           return (
-            <section key={role}>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-base">{meta.emoji}</span>
-                <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-                  {meta.label}
-                </h2>
-                <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-                  {tasks.length}
-                </span>
-                {!stat?.rtmListId && (
-                  <span className="text-xs text-amber-500 dark:text-amber-400 ml-1">
-                    list not found in RTM
-                  </span>
-                )}
-              </div>
-              <div className="border border-gray-100 dark:border-gray-800 rounded-lg px-4">
-                <TaskList role={role} tasks={tasks} />
-              </div>
-            </section>
+            <FilterableTaskSection
+              key={role}
+              role={role}
+              tasks={tasks}
+              hasRtmList={!!stat?.rtmListId}
+            />
           )
         })}
       </div>
