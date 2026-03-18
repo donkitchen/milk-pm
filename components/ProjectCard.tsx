@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { ProjectSummary, ListRole } from '../lib/projects'
 import { LIST_ROLE_META } from '../types/projects'
@@ -77,15 +79,15 @@ export default function ProjectCard({ summary }: Props) {
         <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
           <span>{totalOpen} open items</span>
           {config.url && (
-            <span
-              onClick={(e) => {
-                e.preventDefault()
-                window.open(config.url, '_blank')
-              }}
+            <a
+              href={config.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
               ↗ repo
-            </span>
+            </a>
           )}
         </div>
       </div>
