@@ -20,7 +20,7 @@ export default function RootLayout({
       <body className="antialiased min-h-screen flex flex-col">
         {/* Header */}
         <header className="border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950">
-          <div className="max-w-6xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between">
+          <div className="max-w-5xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <img
                 src="/milktools-mascot.jpg"
@@ -34,6 +34,32 @@ export default function RootLayout({
                 </span>
               </div>
             </Link>
+            <nav className="flex items-center gap-4">
+              <Link
+                href="/history"
+                className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                History
+              </Link>
+              <Link
+                href="/trends"
+                className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                Trends
+              </Link>
+              <Link
+                href="/about"
+                className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                About
+              </Link>
+              <Link
+                href="/settings"
+                className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                Settings
+              </Link>
+            </nav>
           </div>
         </header>
 
