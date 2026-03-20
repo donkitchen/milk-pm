@@ -33,13 +33,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, message: 'No change needed' })
     }
 
-    // Remove the old status tag
+    // Remove the old status tag (if not inbox - inbox has no tag by default)
     const oldTag = getStatusTag(fromStatus)
-    await removeTaskTags(listId, taskseriesId, taskId, oldTag)
+    if (fromStatus !== 'inbox') {
+      try {
+        await removeTaskTags(listId, taskseriesId, taskId, oldTag)
+      } catch (err) {
+        // Tag might not exist, continue anyway
+        console.warn(`Could not remove tag ${oldTag}:`, err)
+      }
+    }
 
-    // Add the new status tag
+    // Add the new status tag (unless moving to inbox - inbox is the default)
     const newTag = getStatusTag(toStatus)
-    await addTaskTags(listId, taskseriesId, taskId, newTag)
+    if (toStatus !== 'inbox') {
+      await addTaskTags(listId, taskseriesId, taskId, newTag)
+    }
 
     // Revalidate pages
     revalidatePath('/')
