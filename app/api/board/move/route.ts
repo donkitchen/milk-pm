@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { addTaskTags, removeTaskTags } from '../../../../lib/rtm'
+import { addTaskTags, removeTaskTags, completeTask, uncompleteTask } from '../../../../lib/rtm'
 import { revalidatePath } from 'next/cache'
 import { BoardColumn, BOARD_COLUMNS, getStatusTag } from '../../../../lib/board'
 
@@ -33,21 +33,40 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, message: 'No change needed' })
     }
 
-    // Remove the old status tag (if not inbox - inbox has no tag by default)
-    const oldTag = getStatusTag(fromStatus)
-    if (fromStatus !== 'inbox') {
-      try {
-        await removeTaskTags(listId, taskseriesId, taskId, oldTag)
-      } catch (err) {
-        // Tag might not exist, continue anyway
-        console.warn(`Could not remove tag ${oldTag}:`, err)
-      }
+    // Handle moving FROM done (uncomplete the task first)
+    if (fromStatus === 'done') {
+      await uncompleteTask(listId, taskseriesId, taskId)
     }
 
-    // Add the new status tag (unless moving to inbox - inbox is the default)
-    const newTag = getStatusTag(toStatus)
-    if (toStatus !== 'inbox') {
-      await addTaskTags(listId, taskseriesId, taskId, newTag)
+    // Handle moving TO done (complete the task)
+    if (toStatus === 'done') {
+      // Remove any existing status tag first
+      if (fromStatus !== 'inbox' && fromStatus !== 'done') {
+        try {
+          await removeTaskTags(listId, taskseriesId, taskId, getStatusTag(fromStatus))
+        } catch (err) {
+          console.warn(`Could not remove tag:`, err)
+        }
+      }
+      await completeTask(listId, taskseriesId, taskId)
+    } else {
+      // Regular status change (not involving done)
+      // Remove the old status tag (if not inbox - inbox has no tag by default)
+      const oldTag = getStatusTag(fromStatus)
+      if (fromStatus !== 'inbox' && fromStatus !== 'done') {
+        try {
+          await removeTaskTags(listId, taskseriesId, taskId, oldTag)
+        } catch (err) {
+          // Tag might not exist, continue anyway
+          console.warn(`Could not remove tag ${oldTag}:`, err)
+        }
+      }
+
+      // Add the new status tag (unless moving to inbox - inbox is the default)
+      const newTag = getStatusTag(toStatus)
+      if (toStatus !== 'inbox') {
+        await addTaskTags(listId, taskseriesId, taskId, newTag)
+      }
     }
 
     // Revalidate pages
@@ -57,8 +76,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      fromTag: oldTag,
-      toTag: newTag,
+      fromStatus,
+      toStatus,
     })
   } catch (error) {
     console.error('Failed to move task:', error)
